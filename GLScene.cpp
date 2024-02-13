@@ -1,5 +1,12 @@
 #include "GLScene.h"
-#include <GLLight.h>
+#include "GLLight.h"
+#include "GLTexture.h"
+#include <GLModel.h>
+#include <GLInputs.h>
+
+GLTexture *teapotTex = new GLTexture();
+GLModel *teapotModel = new GLModel();
+GLInputs *KbMs = new GLInputs();
 
 GLScene::GLScene()
 {
@@ -22,18 +29,25 @@ GLint GLScene::initGL()
 
     GLLight Light(GL_LIGHT0);
     Light.setLight(GL_LIGHT0);
+
+    glEnable(GL_TEXTURE_2D);                        //enable textures
+    teapotTex->loadTexture("images/teapot.jpg");    //load texture
+
     return true;
 }
 
 GLint GLScene::drawScene()  // runs on loop 30x a second
                             // DELICATE
 {
+
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); //clear bits in each iteration
     glLoadIdentity();
     glTranslatef(0.0,0.0,-8.0); // translate object to xyz
-    glColor3f(1.0,0.0,0.0); // color object red
+    glColor3f(1.0,1.0,1.0); // color object red
+
+    teapotTex->bindTexture();       //activate texture handler
     glPushMatrix(); // group object
-        glutSolidTeapot(1.5); // load object & render object
+        teapotModel->drawModel();
     glPopMatrix(); // exit group
 
     return true;
@@ -48,4 +62,13 @@ GLvoid GLScene::resizeScene(GLsizei width, GLsizei height)
     gluPerspective(45, aspectRatio, 0.1, 100.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+}
+
+int GLScene::windMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch(uMsg) {
+    case WM_KEYDOWN:
+        KbMs->wParam = wParam;
+        KbMs->keyPress(teapotModel);
+        break;
+    }
 }

@@ -16,6 +16,7 @@ class GLScene
         GLint initGL();
         GLint drawScene();
         GLvoid resizeScene(GLsizei, GLsizei);
+        int windMsg(HWND, UINT, WPARAM, LPARAM);
 
     protected:
 
